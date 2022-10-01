@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model User{
+  id_user String @id @default(uuid())
+  name String
+  email String
+  password String
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
+  @@map("user")//nome da tabela
+
+}
+
+model Category{
+  id_category String @id @default(uuid())
+  name String
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+  
+  @@map("category")
+  product Product[]
+
+
+}
+
+model Product{
+  id_product String @id @default(uuid())
+  name String
+  price String
+  description String
+  banner String
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
+  category Category @relation(fields: [id_category], references:[id_category])
+
+  @@map("product")
+  id_category String
+  item Item[]
+}
+
+model Order {
+  id_order String @id @default(uuid())
+  table Int
+  status Boolean @default(false)
+  draft Boolean @default(true)
+  name String?
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
+  @@map("order")
+  item Item[]  
+}
+
+model Item{
+  id_item String @id @default(uuid())
+  amount Int
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
+  order Order @relation(fields: [id_order], references: [id_order])
+  product Product @relation(fields: [id_product], references: [id_product])
+  @@map("item")
+  id_order String
+  id_product String
+
+}
